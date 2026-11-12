@@ -85,7 +85,7 @@ O código-fonte organiza-se nos seguintes pacotes e diretórios:
 ## 4. Instruções Detalhadas de Execução (Etapas 4 e 5)
 
 ### Ambiente Necessário
-* **Java JDK 17 ou 21**
+* **Java JDK 21**
 * **IDE Eclipse** (com suporte a Maven)
 * **Banco de Dados MariaDB** em execução
 
