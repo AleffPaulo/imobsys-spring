@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Locação - ImobSys</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="brand">ImobSys</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="listarLocacoes.html">Consultas</a>
+            <a href="/auth/logout">Sair</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card card-narrow">
+            <h2>Cadastro de Locação</h2>
+            <p class="subtitle">Registre um novo imóvel ou contrato de aluguel</p>
+
+            <form id="locacaoForm">
+                <div class="form-group">
+                    <label>Endereço / Identificação do Imóvel</label>
+                    <input type="text" name="imovel" placeholder="Ex: Rua Frei Miguelinho, 102" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Imóvel</label>
+                    <select name="tipo">
+                        <option value="Residencial - Casa">Residencial - Casa</option>
+                        <option value="Residencial - Apartamento">Residencial - Apartamento</option>
+                        <option value="Comercial - Ponto/Sala">Comercial - Ponto/Sala</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Inquilino</label>
+                    <input type="text" name="inquilino" placeholder="Ex: João Silva (ou Sem Inquilino)" required>
+                </div>
+                <div class="form-group">
+                    <label>Valor Mensal do Aluguel (R$)</label>
+                    <input type="number" step="0.01" name="valorMensal" placeholder="Ex: 950.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Status da Locação</label>
+                    <select name="status">
+                        <option value="ATIVO">ATIVO (Alugado)</option>
+                        <option value="DISPONIVEL">DISPONÍVEL (Vago)</option>
+                        <option value="PENDENTE">PENDENTE (Pagamento Atrasado)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Salvar Locação</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>© 2025 ImobSys - Todos os direitos reservados</footer>
+
+    <script>
+        async function onSubmit(evt) {
+            evt.preventDefault();
+            const form = evt.target;
+            const locacao = {
+                imovel: form.imovel.value,
+                tipo: form.tipo.value,
+                inquilino: form.inquilino.value,
+                valorMensal: parseFloat(form.valorMensal.value),
+                status: form.status.value
+            };
+
+            const res = await fetch('/locacoes/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(locacao)
+            });
+
+            if (res.ok) {
+                alert('Locação cadastrada com sucesso!');
+                window.location.href = 'listarLocacoes.html';
+            } else {
+                alert('Erro ao cadastrar locação.');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('locacaoForm').addEventListener('submit', onSubmit);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Financeiro - ImobSys</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="brand">ImobSys</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="listarLocacoes.html">Consultas</a>
+            <a href="/auth/logout">Sair</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2>Relatório Consolidado de Locações</h2>
+                    <p class="subtitle">Indicadores de ocupação e receita mensal de aluguéis</p>
+                </div>
+                <button onclick="window.print()" class="btn" style="width: auto;">Imprimir / Salvar PDF</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span>Total de Imóveis</span>
+                    <strong id="totalImoveis">0</strong>
+                </div>
+                <div class="stat-box">
+                    <span>Contratos Ativos</span>
+                    <strong id="totalAtivos">0</strong>
+                </div>
+                <div class="stat-box">
+                    <span>Imóveis Disponíveis</span>
+                    <strong id="totalDisponiveis">0</strong>
+                </div>
+                <div class="stat-box">
+                    <span>Receita Mensal Ativa</span>
+                    <strong id="receitaTotal">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imóvel</th>
+                        <th>Inquilino</th>
+                        <th>Status</th>
+                        <th>Valor Mensal</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaRelatorio"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function gerarRelatorio() {
+            const res = await fetch('/locacoes/list');
+            const dados = await res.json();
+
+            let ativos = 0;
+            let disponiveis = 0;
+            let receita = 0;
+
+            const tbody = document.getElementById('tabelaRelatorio');
+            tbody.innerHTML = '';
+
+            dados.forEach(d => {
+                if (d.status === 'ATIVO') {
+                    ativos++;
+                    receita += d.valorMensal;
+                } else if (d.status === 'DISPONIVEL') {
+                    disponiveis++;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${d.imovel}</td>
+                        <td>${d.inquilino}</td>
+                        <td><span class="badge badge-${d.status}">${d.status}</span></td>
+                        <td>R$ ${d.valorMensal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('totalImoveis').innerText = dados.length;
+            document.getElementById('totalAtivos').innerText = ativos;
+            document.getElementById('totalDisponiveis').innerText = disponiveis;
+            document.getElementById('receitaTotal').innerText = 'R$ ' + receita.toFixed(2);
+        }
+
+        window.addEventListener('DOMContentLoaded', gerarRelatorio);
+    </script>
+</body>
+</html>

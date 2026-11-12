@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Usuário - ImobSys</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="brand">ImobSys</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="listarUsuarios.html">Usuários</a>
+            <a href="/auth/logout">Sair</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card card-narrow">
+            <h2>Cadastrar Usuário</h2>
+            <p class="subtitle">Defina credenciais e nível de permissão</p>
+            <form id="userForm">
+                <div class="form-group">
+                    <label>Nome de Usuário (Login)</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Papel (Role)</label>
+                    <select name="role">
+                        <option value="USER">USER (Apenas Consulta e Relatório)</option>
+                        <option value="ADMIN">ADMIN (Acesso Completo)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Cadastrar Usuário</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const user = {
+                username: form.username.value,
+                password: form.password.value,
+                role: form.role.value
+            };
+
+            const res = await fetch('/users/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user)
+            });
+
+            if (res.ok) {
+                alert('Usuário cadastrado com sucesso!');
+                window.location.href = 'listarUsuarios.html';
+            } else {
+                alert('Erro ao cadastrar usuário.');
+            }
+        });
+    </script>
+</body>
+</html>

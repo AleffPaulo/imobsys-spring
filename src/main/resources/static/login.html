@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - ImobSys</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card card-narrow">
+            <h2>ImobSys</h2>
+            <p class="subtitle">Gestão Minimalista de Locação de Imóveis</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <input type="text" name="username" placeholder="Ex: admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" placeholder="Ex: admin123" required>
+                </div>
+                <button type="submit" class="btn">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const params = new URLSearchParams();
+            params.append('username', form.username.value);
+            params.append('password', form.password.value);
+
+            const res = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            });
+
+            if (res.ok) {
+                const role = await res.text();
+                if (role === 'ADMIN') {
+                    window.location.href = 'index.html';
+                } else {
+                    window.location.href = 'listarLocacoes.html';
+                }
+            } else {
+                alert('Usuário ou senha inválidos! (Tente admin / admin123)');
+            }
+        });
+    </script>
+</body>
+</html>

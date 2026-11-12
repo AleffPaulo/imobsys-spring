@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar Locações - ImobSys</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="brand">ImobSys</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="cadastrarLocacao.html">Nova Locação</a>
+            <a href="relatorioLocacoes.html">Relatórios</a>
+            <a href="/auth/logout">Sair</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Consulta de Imóveis e Locações</h2>
+            <p class="subtitle">Filtre por status do contrato ou pesquise pelo endereço/inquilino</p>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <input type="text" id="buscaTexto" placeholder="Pesquisar imóvel ou inquilino..." oninput="renderizarTabela()">
+                <select id="filtroStatus" onchange="carregarLocacoes()" style="max-width: 240px;">
+                    <option value="TODOS">Todos os Status</option>
+                    <option value="ATIVO">Somente ATIVOS</option>
+                    <option value="DISPONIVEL">Somente DISPONÍVEIS</option>
+                    <option value="PENDENTE">Somente PENDENTES</option>
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Imóvel</th>
+                        <th>Tipo</th>
+                        <th>Inquilino</th>
+                        <th>Valor (R$)</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCorpo"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>© 2025 ImobSys - Todos os direitos reservados</footer>
+
+    <script>
+        let listaGlobal = [];
+
+        async function carregarLocacoes() {
+            const status = document.getElementById('filtroStatus').value;
+            const res = await fetch(`/locacoes/list?status=${status}`);
+            listaGlobal = await res.json();
+            renderizarTabela();
+        }
+
+        function renderizarTabela() {
+            const termo = document.getElementById('buscaTexto').value.toLowerCase();
+            const tbody = document.getElementById('tabelaCorpo');
+            tbody.innerHTML = '';
+
+            listaGlobal
+                .filter(item => item.imovel.toLowerCase().includes(termo) || item.inquilino.toLowerCase().includes(termo))
+                .forEach(loc => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>#${loc.id}</td>
+                        <td><strong>${loc.imovel}</strong></td>
+                        <td>${loc.tipo}</td>
+                        <td>${loc.inquilino}</td>
+                        <td>R$ ${loc.valorMensal.toFixed(2)}</td>
+                        <td><span class="badge badge-${loc.status}">${loc.status}</span></td>
+                        <td><button class="btn btn-danger" onclick="excluir(${loc.id})">Excluir</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+        }
+
+        async function excluir(id) {
+            if (confirm('Deseja realmente remover este registro?')) {
+                await fetch(`/locacoes/delete/${id}`, { method: 'DELETE' });
+                carregarLocacoes();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', carregarLocacoes);
+    </script>
+</body>
+</html>

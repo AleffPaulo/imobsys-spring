@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários do Sistema - ImobSys</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="brand">ImobSys</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="cadastrarUsuario.html">Novo Usuário</a>
+            <a href="/auth/logout">Sair</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Usuários Cadastrados</h2>
+            <p class="subtitle">Contas com acesso autorizado ao ImobSys</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username (Login)</th>
+                        <th>Nível de Permissão (Role)</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaUsers"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            const res = await fetch('/users/list');
+            const users = await res.json();
+            const tbody = document.getElementById('tabelaUsers');
+            users.forEach(u => {
+                tbody.innerHTML += `<tr><td><strong>${u.username}</strong></td><td>${u.role}</td></tr>`;
+            });
+        });
+    </script>
+</body>
+</html>
